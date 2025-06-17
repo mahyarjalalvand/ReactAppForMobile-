@@ -3,30 +3,19 @@ import { usePostValue } from "../context/PostContext";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import CommentsList from "./CommentsList";
-import { motion, AnimatePresence, useMotionValue, type PanInfo } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
 
 function Post() {
   const { posts } = usePostValue();
   const [showCommentById, setShowCommentById] = useState<number | null>(null);
-  const [height, setHeight] = useState<number>(400);
+  const [height , setHeight] = useState<number>(400)
   const y = useMotionValue(0);
 
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    const offsetY = info.offset.y;
-
-    if (offsetY > 100) {
-      setShowCommentById(null);
-      return;
-    }
-
-    const newHeight = height - offsetY;
-
-    const min = 200;
-    const max = window.innerHeight * 0.8;
-
-    const clampedHeight = Math.max(min, Math.min(newHeight, max));
-    setHeight(clampedHeight);
-    y.set(0); 
+  const handleDragEnd = (_:unknown, info: { offset: { y: number } }) => {
+    const newHeight = height - info.offset.y;
+    if (newHeight < 200) return setHeight(200);
+    if (newHeight > window.innerHeight * 0.8) return setHeight(window.innerHeight * 0.8);
+    setHeight(newHeight);
   };
   return (
     <div className="w-full relative flex flex-wrap justify-end gap-3 rounded-2xl ">
@@ -55,38 +44,17 @@ function Post() {
           </div>
         </div>
       ))}
-
       <AnimatePresence>
         {showCommentById !== null && (
-          <motion.div
-            key="backdrop"
-            className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}>
-
-            <motion.div
-              key="modal"
-              drag="y"
-              style={{ y, height }}
-              onDragEnd={handleDragEnd}
-              dragConstraints={{ top: -100, bottom: 0 }}
-              initial={{ y: 300 }}
-              animate={{ y: 0 }}  
-              exit={{ y: 500 }}
-              transition={{ type: "spring", damping: 35, stiffness: 900 }}
-              className="fixed bottom-0 z-50 flex flex-col gap-3 items-end bg-secondary2 rounded-t-2xl max-w-3xl w-full p-4">
-              <div className="w-full flex justify-center">
-                <div className="w-12 h-1.5 bg-white/50 rounded-full mb-2" />
+          <motion.div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center ">
+            <div className="relative z-50 flex flex-col gap-5 items-end bg-secondary2 rounded-2xl max-w-3xl h-2/3 w-full p-4">
+              <div className="cursor-pointer">
+                <IoMdCloseCircleOutline size={35} onClick={() => setShowCommentById(null)} />
               </div>
-
-              <div className="cursor-pointer" onClick={() => setShowCommentById(null)}>
-                <IoMdCloseCircleOutline size={35} />
-              </div>
-              <div className="w-full overflow-y-auto">
+              <div className="w-full">
                 <CommentsList postId={showCommentById} />
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
