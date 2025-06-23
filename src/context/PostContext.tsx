@@ -12,6 +12,7 @@ const PostContext = createContext<PostContextType | null>(null);
 
 function PostProvider({ children }: { children: ReactNode }) {
   const [posts, setPosts] = useState<PostType[]>(postDatas);
+  // console.log(posts)
   return <PostContext.Provider value={{ posts, setPosts }}>{children}</PostContext.Provider>;
 }
 export const usePostValue = () => {
