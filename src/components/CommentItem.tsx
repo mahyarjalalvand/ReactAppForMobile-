@@ -1,17 +1,9 @@
-import { useState, type ReactNode } from "react";
-import type { CommentType } from "../types/types";
+import { useState } from "react";
+import type { CommentItemProps } from "../types/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
-interface CommentProps {
-  comment: CommentType;
-  postId: number | null;
-  onReply: (id: number, name: string, avatar: string) => void;
-  isReply?: boolean;
-  children?: ReactNode;
-}
-
-function CommentItem({ comment, onReply, isReply = false, children }: CommentProps) {
+function CommentItem({ comment, onReply, isReply = false, children }: CommentItemProps) {
   const [likedComment, setLikeComment] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(comment.like ?? 0);
   const [replyComponentIsRender, setReplyComponentIsRender] = useState<boolean>(false);
@@ -21,11 +13,9 @@ function CommentItem({ comment, onReply, isReply = false, children }: CommentPro
     setLikeComment((likedCommentId) => !likedCommentId);
   };
 
-  const toggleReply = (): void => setReplyComponentIsRender((prev) => !prev);
-
-  const replyClickHandler = () => {
-    console.log({ comment });
-    if (onReply) onReply(comment.id, comment.auther, comment.avatar);
+  const toggleReply = (): void => {
+    setReplyComponentIsRender((prev) => !prev);
+    console.log(replyComponentIsRender);
   };
 
   return (
@@ -73,7 +63,7 @@ function CommentItem({ comment, onReply, isReply = false, children }: CommentPro
 
             <div className="flex justify-end w-1/3">
               <button
-                onClick={replyClickHandler}
+                onClick={() => onReply(comment.id, comment.auther, comment.avatar)}
                 className="text-blue-600 cursor-pointer font-bold flex self-end hover:-translate-x-1 transition-all duration-200">
                 پاسخ
               </button>

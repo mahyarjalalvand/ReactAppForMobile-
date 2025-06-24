@@ -1,19 +1,17 @@
-import type { CommentType } from "../types/types";
+import type {  ReplyComponentProps } from "../types/types";
 // import { motion, AnimatePresence } from "framer-motion";
 import CommentItem from "./CommentItem";
 
-function ReplyComment({
-  postId,
-  replyComment,
-  onReply,
-}: {
-  postId: number | null;
-  replyComment: CommentType;
-  onReply: (id: number, name: string, avatar: string) => void;
-}) {
+function ReplyComment({ postId, replyComment, onReply }: ReplyComponentProps) {
   return (
-    <div className="flex gap-5">
-      <CommentItem comment={replyComment} postId={postId} onReply={onReply} isReply />
+    <div className="flex flex-col gap-5">
+      <CommentItem comment={replyComment} postId={postId} onReply={onReply} isReply>
+        {replyComment.reply &&
+          replyComment.reply?.length > 0 &&
+          replyComment.reply?.map((childReply) => (
+            <ReplyComment key={childReply.id} postId={postId} replyComment={childReply} onReply={onReply} />
+          ))}
+      </CommentItem>
     </div>
   );
 }

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { usePostValue } from "../context/PostContext";
-import CommentComponent from "./CommentCard";
+import CommentCard from "./CommentCard";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { RiTelegram2Line } from "react-icons/ri";
 import { IoClose } from "react-icons/io5";
 
 import avatar1 from "../assets/images/Frame 24.png";
+import type { CommentType } from "../types/types";
 
 function Comments({ postId }: { postId: number | null }) {
   const { posts, setPosts } = usePostValue();
@@ -16,40 +17,54 @@ function Comments({ postId }: { postId: number | null }) {
 
   const post = posts.find((p) => p.id === postId);
 
+  const addReplyToCommentTree = (comments: CommentType[], targetId: number, reply: CommentType): CommentType[] => {
+    return comments.map((comment) => {
+      if (comment.id === targetId) {
+        return {
+          ...comment,
+          reply: [...(comment.reply || []), reply],
+        };
+      }
+      if (comment.reply && comment.reply?.length > 0) {
+        const updatedReply = addReplyToCommentTree(comment.reply, targetId, reply);
+        if (updatedReply !== comment.reply) {
+          return {
+            ...comment,
+            reply: updatedReply,
+          };
+        }
+      }
+      return comment;
+    });
+  };
+
   const addCommentHandler = () => {
+    // const newReplyId =
+    //   comment.reply && comment.reply?.length > 0 ? Math.max(...comment.reply.map((r) => r.id)) + 1 : 1;
     if (!inputValue.trim() || !postId) return;
 
     const updatedPosts = posts.map((p) => {
       if (p.id === postId) {
         const currentComments = p.comment || [];
         if (replyTo) {
-          const updateComments = currentComments.map((comment) => {
-            if (comment.id === replyTo.id) {
-              const newReplyId =
-                comment.reply && comment.reply?.length > 0 ? Math.max(...comment.reply.map((r) => r.id)) + 1 : 1;
-              const newReply = {
-                id: newReplyId,
-                auther: "رضا رضایی",
-                avatar: avatar1,
-                text: inputValue,
-                like: 0,
-                reply: [],
-              };
-              return {
-                ...comment,
-                reply: [...(comment.reply || []), newReply],
-              };
-            }
-            return comment;
-          });
+          const newReply = {
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            auther: "رضا رضایی",
+            avatar: avatar1,
+            text: inputValue,
+            like: 0,
+            reply: [],
+          };
+          const updatedComments = addReplyToCommentTree(currentComments, replyTo.id, newReply);
+
           return {
             ...p,
-            comment: updateComments,
+            comment: updatedComments,
           };
         }
-        const newId = currentComments.length > 0 ? Math.max(...currentComments.map((c) => c.id)) + 1 : 1;
+        // const newId = currentComments.length > 0 ? Math.max(...currentComments.map((c) => c.id)) + 1 : 1;
         const newComment = {
-          id: newId,
+          id: Date.now() + Math.floor(Math.random() * 1000),
           auther: "احمد رضایی",
           avatar: avatar1,
           text: inputValue,
@@ -69,13 +84,12 @@ function Comments({ postId }: { postId: number | null }) {
   };
 
   const replyHandler = (id: number, name: string, avatar: string) => setReplyTo({ id, name, avatar });
-
   return (
     <div className="flex flex-col items-end justify-between min-h-screen gap-3 ">
       {post ? (
         post.comment && post.comment.length > 0 ? (
           post.comment.map((comment) => (
-            <CommentComponent key={comment.id} comment={comment} postId={postId} onReply={replyHandler} />
+            <CommentCard key={comment.id} comment={comment} postId={postId} onReply={replyHandler} />
           ))
         ) : (
           <div className="size-full flex justify-center bg-primary p-2 rounded-2xl">

@@ -10,24 +10,24 @@ const postDatas: PostType[] = [
     postImage: postImage1,
     comment: [
       {
-        id: 1,
+        id: 2,
         auther: "رضا حسینی",
         text: "سلام کافه خیلی خوبی بود سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود ",
         avatar: avatar1,
         like: 5,
         reply: [
           {
-            id: 1,
+            id: 3,
             auther: "پویا رضوی",
             text: "موافقم",
             avatar: avatar1,
             like: 0,
-            reply:[]
+            reply: [],
           },
         ],
       },
       {
-        id: 2,
+        id: 4,
         auther: "امیر رحیمی",
         text: "سلام کافه خیلی خوبی بود سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود  ",
         avatar: avatar1,
@@ -35,7 +35,7 @@ const postDatas: PostType[] = [
         reply: [],
       },
       {
-        id: 3,
+        id: 5,
         auther: "لیلا احمدی",
         text: "سلام کافه خیلی خوبی بود   ",
         avatar: avatar1,
@@ -43,52 +43,52 @@ const postDatas: PostType[] = [
         reply: [],
       },
       {
-        id: 4,
+        id: 6,
         auther: "میلاد کریمی",
         text: "سلام کافه خیلی خوبی بود سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود ",
         avatar: avatar1,
         like: 5,
         reply: [
-           {
-            id: 1,
+          {
+            id: 7,
             auther: "حسن حسنی ",
             text: "موافقم",
             avatar: avatar1,
-            like: 1,
+            like: 0,
           },
         ],
       },
     ],
   },
   {
-    id: 2,
+    id: 8,
     auther: "علیرضا محمدی",
     avatar: avatar1,
     postImage: postImage1,
     comment: [],
   },
   {
-    id: 3,
+    id: 9,
     auther: "علیرضا محمدی",
     avatar: avatar1,
     postImage: postImage1,
     comment: [],
   },
   {
-    id: 4,
+    id: 10,
     auther: "علیرضا محمدی",
     avatar: avatar1,
     postImage: postImage1,
     comment: [],
   },
   {
-    id: 5,
+    id: 11,
     auther: "علیرضا احمدی",
     avatar: avatar1,
     postImage: postImage1,
     comment: [
       {
-        id: 1,
+        id: 12,
         auther: "جواد جوادی",
         text: "سلام کافه خیلی خوبی بود سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود  سلام کافه خیلی خوبی بود ",
         avatar: avatar1,

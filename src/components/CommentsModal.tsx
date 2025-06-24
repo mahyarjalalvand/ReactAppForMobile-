@@ -4,17 +4,17 @@ import { GrNext } from "react-icons/gr";
 import { motion, AnimatePresence, useMotionValue, type PanInfo } from "framer-motion";
 import Comments from "./Comments";
 
-type Prop = {
+interface Prop {
   postId: number | null;
   setPostId: React.Dispatch<React.SetStateAction<number | null>>;
-};
+}
 
-function CommentsList({ postId, setPostId }: Prop) {
+function CommentsModal({ postId, setPostId }: Prop) {
   const [height, setHeight] = useState<number>(500);
   const y = useMotionValue(0);
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
-    const offsetY = info.offset.y;
+    const offsetY:number = info.offset.y;
 
     if (offsetY > 200) {
       setPostId(null);
@@ -22,11 +22,11 @@ function CommentsList({ postId, setPostId }: Prop) {
       return;
     }
 
-    const newHeight = height - offsetY;
-    const min = 200;
-    const max = window.innerHeight * 0.8;
+    const newHeight: number = height - offsetY;
+    const min: number = 200;
+    const max: number = window.innerHeight * 0.8;
 
-    const clampedHeight = Math.max(min, Math.min(newHeight, max));
+    const clampedHeight:number = Math.max(min, Math.min(newHeight, max));
     setHeight(clampedHeight);
     y.set(0);
   };
@@ -53,9 +53,11 @@ function CommentsList({ postId, setPostId }: Prop) {
           <div className="w-full flex justify-center">
             <div className="w-12 h-1.5 bg-primary rounded-full mb-2" />
           </div>
-          <div className="flex items-center gap-3 mb-2 cursor-pointer" onClick={() => setPostId(null)}>
+          <div
+            className="flex items-center gap-3 mb-2 cursor-pointer  hover:[&_div]:translate-x-2 hover:[&_div]:rotate-90"
+            onClick={() => setPostId(null)}>
             <span className="font-bold">بازگشت</span>
-            <div className="bg-primary rounded-full p-2 w-fit hover:translate-x-2 hover:rotate-90 transition-all duration-200">
+            <div className="bg-primary rounded-full p-2 w-fit transition-all duration-200">
               <GrNext size={"20px"} />
             </div>
           </div>
@@ -68,4 +70,4 @@ function CommentsList({ postId, setPostId }: Prop) {
   );
 }
 
-export default CommentsList;
+export default CommentsModal;

@@ -13,15 +13,10 @@ function CommentCard({
   postId: number | null;
   onReply: (id: number, name: string, avatar: string) => void;
 }) {
-  
   return (
     <CommentItem comment={comment} postId={postId} onReply={onReply}>
       {comment.reply?.map((reply) => (
-        <>
-        {console.log("replyComment",reply)}
-
-        <ReplyComment key={reply.id} replyComment={reply} postID={postId} onReply={onReply} />
-        </>
+        <ReplyComment key={reply.id} replyComment={reply} postId={postId} onReply={onReply} />
       ))}
     </CommentItem>
   );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { usePostValue } from "../context/PostContext";
 import { TfiCommentAlt } from "react-icons/tfi";
-import CommentsList from "./CommentsModal";
+import CommentsModal from "./CommentsModal";
 // import PostCard from "./PostCard";
 
 function Post() {
@@ -38,7 +38,7 @@ function Post() {
       ))}
 
       {postId !== null && (
-        <CommentsList postId={postId} setPostId={setPostId} />
+        <CommentsModal postId={postId} setPostId={setPostId} />
       )}
     </div>
   );
