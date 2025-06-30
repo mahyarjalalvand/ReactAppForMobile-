@@ -1,71 +1,121 @@
-import { useState } from "react";
-import { GrNext } from "react-icons/gr";
+import { useEffect, useRef, useState } from "react";
 
 import { motion, AnimatePresence, useMotionValue, type PanInfo } from "framer-motion";
+import type { CommentModalProp } from "../types/types";
+import { GrNext } from "react-icons/gr";
+
 import Comments from "./Comments";
+import { modalVariants } from "../variants/variants";
 
-interface Prop {
-  postId: number | null;
-  setPostId: React.Dispatch<React.SetStateAction<number | null>>;
-}
+function CommentsModal({ postId, setPostId }: CommentModalProp) {
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [maxHeight, setMaxHeight] = useState<number>(window.innerHeight * 0.9);
+  const [isClosing, setIsClosing] = useState<boolean>(false);
+  const [submitContainerHeight, setSubmitContainerHeight] = useState<number | undefined>(undefined);
 
-function CommentsModal({ postId, setPostId }: Prop) {
-  const [height, setHeight] = useState<number>(500);
-  const y = useMotionValue(0);
+  const modalHeight = useMotionValue(400);
+  const baseHeight = useRef(400);
+  const minHeight = 300;
 
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    const offsetY:number = info.offset.y;
+  useEffect(() => {
+    const resizeHandler = () => {
+      const newMaxHeight = window.innerHeight * 0.9;
+      setMaxHeight(newMaxHeight);
 
-    if (offsetY > 200) {
-      setPostId(null);
-      setHeight(500);
+      if (modalHeight.get() > newMaxHeight) {
+        modalHeight.set(newMaxHeight);
+        baseHeight.current = newMaxHeight;
+      }
+    };
+
+    window.addEventListener("resize", resizeHandler);
+  }, []);
+
+  const handleDrag = (_: unknown, info: PanInfo) => {
+    const newHeight = baseHeight.current - info.offset.y;
+
+    if (newHeight >= minHeight && newHeight <= maxHeight) {
+      modalHeight.set(newHeight);
+    }
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    const currentHeight = modalHeight.get();
+    if (currentHeight < 305) {
+      closeModal();
       return;
     }
 
-    const newHeight: number = height - offsetY;
-    const min: number = 200;
-    const max: number = window.innerHeight * 0.8;
-
-    const clampedHeight:number = Math.max(min, Math.min(newHeight, max));
-    setHeight(clampedHeight);
-    y.set(0);
+    baseHeight.current = modalHeight.get();
+    if (modalHeight.get() > maxHeight) {
+      modalHeight.set(maxHeight);
+    }
+    setIsDragging(false);
   };
+
+  const closeModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setPostId(null);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (postId) {
+      modalHeight.set(400);
+    }
+  }, [postId]);
+  // console.log(baseHeight)
+  // useEffect(() => {
+  //   console.log("Updated height:", submitContainerHeight);
+  // }, [submitContainerHeight]);
   return (
     <AnimatePresence>
-      <motion.div
-        key="backdrop"
-        className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={(e) => !e && setPostId(null)}>
+      {!isClosing && (
         <motion.div
-          key="modal"
-          drag="y"
-          style={{ y, height }}
-          onDragEnd={handleDragEnd}
-          dragConstraints={{ top: -100, bottom: 100 }}
-          initial={{ y: 300 }}
-          animate={{ y: 0 }}
-          exit={{ y: 100 }}
-          transition={{ type: "spring", damping: 35, stiffness: 800 }}
-          className="fixed bottom-0 z-50 flex flex-col items-end bg-white rounded-t-2xl max-w-3xl w-full p-2 sm:p-4">
-          <div className="w-full flex justify-center">
-            <div className="w-12 h-1.5 bg-primary rounded-full mb-2" />
-          </div>
-          <div
-            className="flex items-center gap-3 mb-2 cursor-pointer  hover:[&_div]:translate-x-2 hover:[&_div]:rotate-90"
-            onClick={() => setPostId(null)}>
-            <span className="font-bold">بازگشت</span>
-            <div className="bg-primary rounded-full p-2 w-fit transition-all duration-200">
-              <GrNext size={"20px"} />
+          className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => {
+            if (!isDragging) closeModal();
+          }}>
+          <motion.div
+            variants={modalVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            style={{ height: modalHeight }}
+            onClick={(e) => e.stopPropagation()}
+            className="fixed bottom-0 z-50 flex flex-col items-end bg-white rounded-t-2xl max-w-3xl w-full p-2 sm:px-4">
+            <motion.div
+              className="w-full flex justify-center py-3"
+              drag="y"
+              onDrag={handleDrag}
+              onDragEnd={handleDragEnd}
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={0}>
+              <div className="w-12 h-1.5 bg-primary rounded-full mb-2" />
+            </motion.div>
+            <div
+              className="flex items-center gap-3 mb-2 cursor-pointer  hover:[&_div]:translate-x-2 hover:[&_div]:rotate-90"
+              onClick={closeModal}>
+              <span className="font-bold">بازگشت</span>
+              <div className="bg-primary rounded-full p-2 w-fit transition-all duration-200">
+                <GrNext size={"20px"} />
+              </div>
             </div>
-          </div>
-          <div className="w-full overflow-y-auto ">
-            <Comments postId={postId} />
-          </div>
+            <div
+              className="w-full overflow-y-auto noScrollbar"
+              style={{ paddingBottom: `${submitContainerHeight ?? 0}px` }}>
+              <Comments postId={postId} setSubmitContainerHeight={setSubmitContainerHeight} />
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 }

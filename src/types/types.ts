@@ -7,24 +7,33 @@ export interface PostType {
   postImage: string;
   comment?: CommentType[];
 }
-export interface CommentType {
-  id: number;
-  auther: string;
+export interface CommentType extends Pick<PostType, "id" | "auther" | "avatar"> {
   text: string;
-  avatar: string;
   like: number;
   reply?: CommentType[];
 }
-export interface CommentItemProps {
+
+export interface CommentModalProp {
+  postId: number | null;
+  setPostId: React.Dispatch<React.SetStateAction<number | null>>;
+}
+export interface CommentComponentProps extends Pick<CommentModalProp , "postId"> {
+  setSubmitContainerHeight: React.Dispatch<React.SetStateAction<number | undefined>>;
+}
+
+export interface ReplyComponentProps extends Pick<CommentModalProp , "postId"> {
+  replyComment: CommentType;
+  onReply: (id: number, name: string, avatar: string) => void;
+}
+
+export interface CommentCardTypeProps {
   comment: CommentType;
   postId: number | null;
   onReply: (id: number, name: string, avatar: string) => void;
-  isReply?: boolean;
-  children?: ReactNode;
+  textareaHandler: () => void;
 }
-
-export interface ReplyComponentProps {
-  postId: number | null;
-  replyComment: CommentType;
-  onReply: (id: number, name: string, avatar: string) => void;
+export interface CommentItemProps extends Pick<CommentCardTypeProps, "comment" | "postId" | "onReply"> {
+  isReply?: boolean;
+  textareaHandler: () => void;
+  children?: ReactNode;
 }

@@ -4,6 +4,7 @@
   --color-primary2: #b9b9b9;
   --color-secondary2: #9e9d9d;
   --color-secondary: #f7f7f7;
+  --color-primaryBlue:#1590F7;
   /* --breakpoint-sm: 36rem; */
 }
 
@@ -11,4 +12,11 @@
   body {
     @apply h-screen w-full flex justify-center bg-black/10;
   }
+  .noScrollbar::-webkit-scrollbar{
+    display: none;
+  }
+  /* .noScrollbar{
+    scrollbar-width: 0;
+
+  } */
 }
